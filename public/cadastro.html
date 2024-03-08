@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Cadastro</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .register-container {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .register-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .register-btn {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .password-match {
+            color: #28a745;
+        }
+
+        .password-not-match {
+            color: #dc3545;
+        }
+
+        .email-error {
+            color: #dc3545;
+        }
+
+        .progress-container {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="register-container">
+        <h2>Cadastro</h2>
+        <form id="form" action="/auth/register" method="post" onsubmit="return validateForm()">
+            <div class="form-group">
+                <label for="name">Nome:</label>
+                <input type="text" name="name" class="form-control" id="name" placeholder="Digite seu nome" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" class="form-control" id="email" placeholder="Digite seu email"
+                    required>
+                <small id="emailError" class="form-text email-error"></small>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" name="password" class="form-control" id="password" placeholder="Digite sua senha"
+                    required>
+                <div class="progress-container">
+                    <progress id="passwordStrength" max="100" value="0"></progress>
+                </div>
+                <small id="passwordMatch" class="form-text password-match"></small>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmação de Senha:</label>
+                <input type="password" name="confirmpassword" class="form-control" id="confirmPassword"
+                    placeholder="Confirme sua senha" required>
+            </div>
+
+            <button type="submit" id="enviar" class="btn btn-block register-btn">Cadastrar</button>
+        </form>
+
+        <div class="text-center pt-3">
+            <a href="/login.html">Já tem uma conta? Faça login</a>
+        </div>
+    </div>
+
+    <!-- Adicione o link para o Bootstrap JS e o jQuery (opcional, mas muitas funcionalidades do Bootstrap dependem dele) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('password').addEventListener('input', function () {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const passwordMatchElement = document.getElementById('passwordMatch');
+            const passwordStrengthElement = document.getElementById('passwordStrength');
+            const isValidPassword = validatePassword(password);
+
+            if (isValidPassword) {
+                const strength = calculatePasswordStrength(password);
+                passwordStrengthElement.value = strength;
+                passwordStrengthElement.style.color = getColorForStrength(strength);
+                passwordMatchElement.textContent = '';
+            } else {
+                passwordStrengthElement.value = 0;
+                passwordStrengthElement.style.color = '#000';
+                passwordMatchElement.textContent = 'A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número.';
+            }
+
+            if (password === confirmPassword) {
+                passwordMatchElement.textContent = 'Senhas coincidem!';
+                passwordMatchElement.classList.remove('password-not-match');
+                passwordMatchElement.classList.add('password-match');
+            } else {
+                passwordMatchElement.textContent = 'As senhas não coincidem.';
+                passwordMatchElement.classList.remove('password-match');
+                passwordMatchElement.classList.add('password-not-match');
+            }
+        });
+
+        function validatePassword(password) {
+            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+            return regex.test(password);
+        }
+
+        function calculatePasswordStrength(password) {
+            const length = password.length;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumber = /\d/.test(password);
+
+            const strength = (length * 10) + (hasUpperCase ? 20 : 0) + (hasLowerCase ? 20 : 0) + (hasNumber ? 20 : 0);
+            return Math.min(strength, 100);
+        }
+
+        function getColorForStrength(strength) {
+            if (strength < 30) {
+                return '#dc3545'; // Red
+            } else if (strength < 60) {
+                return '#ffc107'; // Yellow
+            } else {
+                return '#28a745'; // Green
+            }
+        }
+
+        function validateForm() {
+            // Adicione lógica de validação adicional aqui, se necessário
+            return validateEmail() && validatePassword(document.getElementById('password').value);
+        }
+
+        function validateEmail() {
+            const email = document.getElementById('email').value;
+            const emailErrorElement = document.getElementById('emailError');
+            const allowedDomains = ['gmail.com', 'outlook.com', 'uol.com.br'];
+
+            const isValidEmail = allowedDomains.some(domain => email.endsWith('@' + domain));
+
+            if (!isValidEmail) {
+                emailErrorElement.textContent = 'Por favor, insira um e-mail válido (ex: gmail.com, outlook.com, uol.com.br)';
+                emailErrorElement.classList.add('email-error');
+                return false;
+            } else {
+                emailErrorElement.textContent
+                    = '';
+                emailErrorElement.classList.remove('email-error');
+                return true;
+            }
+        }
+    </script>
+
+</body>
+
+</html>

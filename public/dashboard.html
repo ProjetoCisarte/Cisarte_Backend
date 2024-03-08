@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Menu</title>
+  <!-- Adicione os estilos do Bootstrap (CSS) -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Adicione os ícones Font Awesome (CSS) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <script>
+    // Função para obter o valor de um parâmetro da URL
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, "\\$&");
+      var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    // Obter o token da URL
+    const token = getParameterByName('token');
+
+    if (!token) {
+      // Redirecionar para a página de login com mensagem "invalid" na URL se o token não estiver presente
+
+      window.location.href = 'login.html?msg=invalid';
+    } else {
+      // Verificar se o token está expirado (30 minutos)
+      const tokenData = JSON.parse(atob(token.split('.')[1]));
+      const tokenExpiration = tokenData.exp * 1000; // Convertendo segundos para milissegundos
+      const currentTime = new Date().getTime();
+
+      if (currentTime > tokenExpiration) {
+        // Token expirado, redirecionar para a página de login
+        window.location.href = 'loginFalha.html'; // Substitua 'pagina-de-login.html' pela sua página de login
+      } else {
+        // Token válido, você pode armazenar localmente ou continuar com o fluxo de aplicativo
+        console.log('Token válido por mais de 30 minutos');
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    #sidebar {
+      position: fixed;
+      width: 250px;
+      height: 100%;
+      background: #343a40;
+      /* Cor de fundo do menu */
+      padding-top: 20px;
+    }
+
+    #sidebar a {
+      padding: 10px;
+      text-decoration: none;
+      font-size: 18px;
+      color: #818181;
+      display: block;
+      transition: 0.3s;
+    }
+
+    #sidebar a:hover {
+      color: #f8f9fa;
+      /* Cor do texto ao passar o mouse */
+    }
+
+    #sidebar .active {
+      background-color: #007bff;
+      /* Cor de fundo do item ativo */
+      color: #ffffff;
+    }
+
+    #content {
+      margin-left: 250px;
+      padding: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Barra lateral -->
+  <div id="sidebar">
+    <a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="#"><i class="fas fa-list"></i> Listar Vagas</a>
+    <a href="#"><i class="fas fa-cogs"></i> Configurações</a>
+  </div>
+
+  <!-- Conteúdo da página -->
+  <div id="content">
+    <!-- Seu conteúdo aqui -->
+    <h2>Seja bem Vindo</h2>
+  </div>
+
+  <!-- Adicione os scripts do Bootstrap (JS) e do jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
