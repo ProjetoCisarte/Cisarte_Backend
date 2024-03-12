@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const User = mongoose.model('User', {
+    idUsuario: int,
     idTipoDeUsuario: int,
     email: varchar,
     senha: varchar,
